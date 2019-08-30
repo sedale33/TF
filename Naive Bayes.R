@@ -3,7 +3,7 @@ require(ramify)
 require(R6)
 
 GaussNB <- R6Class("GaussNB", list( K = 0, mu = 0, cov = 0,
-  fit = function(X, y, epsilon= 1){
+  fit = function(X, y, epsilon= 1e-3){
     self$K <- unique(y)
     data <- cbind(X, y)
     nfeat <- length(data[1,]) - 1
@@ -16,7 +16,7 @@ GaussNB <- R6Class("GaussNB", list( K = 0, mu = 0, cov = 0,
     P_hat <- mat.or.vec(length(y), length(self$K))
     for(i in seq_along(self$K)){
       for(r in seq_along(X[,1])){
-        P_hat[r, i] <- sum(-0.5*log(2*pi) - log((self$cov[i,-1])+1) - ((X[r,]-self$mu[i,-1])^2)/(2*(self$cov[i,-1]^2)+1))
+        P_hat[r, i] <- sum(-0.5*log(2*pi) - 0.5*log((self$cov[i,-1])) - sum((X[r,]-self$mu[i,-1])^2)/(2*(self$cov[i,-1]^2)))
       }
     }
     argmax(P_hat) - 1
